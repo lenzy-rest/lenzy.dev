@@ -2,253 +2,132 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lenzy</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body, html {
+        html, body {
             margin: 0;
             padding: 0;
-            height: 100%;
-            font-family: 'Poppins', sans-serif;
             overflow: hidden;
-            color: white;
+            background: black;
         }
-        
-        #initial-screen {
-            position: fixed;
+        canvas {
+            display: block;
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            cursor: pointer;
+            z-index: 0;
         }
-        
-        #initial-screen h1 {
-            font-size: 3rem;
-            padding: 0;
-            font-weight: 600;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-        
-        #video-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
-        }
-        
-        #content {
-            display: none;
-            height: 100vh;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 0;
-        }
-        
-        .profile-container {
-            background-color: rgba(100, 100, 100, 0.5);
-            padding: 30px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-        
-        #profile-pic {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid white;
-            margin: 0;
-        }
-        
-        #title {
-            font-size: 2.5rem;
-            margin: 0;
-            font-weight: bold;
-        }
-        
-        #typing-text {
-            font-size: 1.5rem;
-            height: 60px;
-            margin: 0;
-        }
-        
-        #social-icons {
-            display: flex;
-            gap: 0;
-            margin: 0;
-            background-color: rgba(100, 100, 100, 0.5);
-            padding: 15px 20px;
-            border-radius: 50px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-        
-        .social-icon {
-            color: white;
-            font-size: 2rem;
-            transition: transform 0.3s;
-            padding: 0 5px;
-        }
-        
-        .social-icon:hover {
-            transform: scale(1.2);
-        }
-        
-        #volume-control {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        #volume-slider {
-            width: 100px;
-            -webkit-appearance: none;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 5px;
-            outline: none;
-            margin: 0;
-        }
-        
-        #volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: white;
-            cursor: pointer;
-        }
-        
-        #mute-button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0;
-            margin: 0;
+        img {
+            position: absolute;
+            top: 50%;
+            left: 60%; 
+            transform: translate(-50%, -50%);
+            z-index: 1; 
+            max-width: 300px;
         }
     </style>
 </head>
 <body>
-    <div id="initial-screen">
-        <h1>[ Click Me ]</h1>
-    </div>
-    
-    <video id="video-background" autoplay loop muted playsinline>
-        <source src="x.mp4" type="video/mp4">
-    </video>
-    
-    <audio id="background-audio" loop>
-        <source src="z.mp3" type="audio/mp3">
-    </audio>
-    
-    <div id="volume-control">
-        <button id="mute-button"><i class="fas fa-volume-up"></i></button>
-        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
-    </div>
-    
-    <div id="content">
-        <div class="profile-container">
-            <img id="profile-pic" src="p.png" alt="Profile Picture">
-            <h1 id="title">Lenzy</h1>
-            <div id="typing-text"></div>
-        </div>
-        <div id="social-icons">
-            <a href="https://discord.gg/input" class="social-icon" target="_blank"><i class="fab fa-discord"></i></a>
-            <a href="https://t.me/@lenziii" class="social-icon" target="_blank"><i class="fab fa-telegram"></i></a>
-            <a href="https://www.youtube.com/@Impossible-m4z" class="social-icon" target="_blank"><i class="fab fa-youtube"></i></a>
-            <a href="#" class="social-icon" target="_blank"><i class="fab fa-snapchat"></i></a>
-        </div>
-    </div>
+<canvas id="particles"></canvas>
+<img src="p.png" alt="Image">
 
-    <script>
-        document.getElementById('initial-screen').addEventListener('click', function() {
-            this.style.display = 'none';
-            document.getElementById('content').style.display = 'flex';
-            document.getElementById('background-audio').play();
-        });
-        
-        const audio = document.getElementById('background-audio');
-        const volumeSlider = document.getElementById('volume-slider');
-        const muteButton = document.getElementById('mute-button');
-        
-        volumeSlider.addEventListener('input', function() {
-            audio.volume = this.value;
-            if (this.value == 0) {
-                muteButton.innerHTML = '<i class="fas fa-volume-mute"></i>';
-            } else {
-                muteButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+<script>
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+
+let particles = [];
+const particleCount = 180;
+const connectionDistance = 150;
+let mouse = { x: null, y: null };
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+window.addEventListener('mousemove', e => {
+    mouse.x = e.x;
+    mouse.y = e.y;
+});
+
+class Particle {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * 1.2;
+        this.vy = (Math.random() - 0.5) * 1.2;
+        this.size = 3;
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+    }
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = "white";
+        ctx.fill();
+    }
+}
+
+function connectParticles() {
+    for (let a = 0; a < particles.length; a++) {
+        for (let b = a + 1; b < particles.length; b++) {
+            let dx = particles[a].x - particles[b].x;
+            let dy = particles[a].y - particles[b].y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < connectionDistance) {
+                ctx.strokeStyle = `rgba(255, 255, 255, ${1 - distance / connectionDistance})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(particles[a].x, particles[a].y);
+                ctx.lineTo(particles[b].x, particles[b].y);
+                ctx.stroke();
             }
-        });
-        
-        muteButton.addEventListener('click', function() {
-            if (audio.volume > 0) {
-                audio.volume = 0;
-                volumeSlider.value = 0;
-                this.innerHTML = '<i class="fas fa-volume-mute"></i>';
-            } else {
-                audio.volume = 0.5;
-                volumeSlider.value = 0.5;
-                this.innerHTML = '<i class="fas fa-volume-up"></i>';
-            }
-        });
-        
-        audio.volume = 0.5;
-        
-        const phrases = [
-            "16 Years Old",
-            "Discord.gg/input",
-            "Keep it Real"
-        ];
-        const typingElement = document.getElementById('typing-text');
-        let phraseIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        let typingSpeed = 150;
-        
-        function type() {
-            const currentPhrase = phrases[phraseIndex];
-            
-            if (isDeleting) {
-                typingElement.textContent = currentPhrase.substring(0, charIndex - 1);
-                charIndex--;
-                typingSpeed = 50;
-            } else {
-                typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
-                charIndex++;
-                typingSpeed = 150;
-            }
-            
-            if (!isDeleting && charIndex === currentPhrase.length) {
-                typingSpeed = 2000;
-                isDeleting = true;
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-                typingSpeed = 500;
-            }
-            
-            setTimeout(type, typingSpeed);
         }
-        
-        setTimeout(type, 1000);
-    </script>
+        if (mouse.x && mouse.y) {
+            let dx = particles[a].x - mouse.x;
+            let dy = particles[a].y - mouse.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < connectionDistance) {
+                ctx.strokeStyle = `rgba(255, 255, 255, ${1 - distance / connectionDistance})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(particles[a].x, particles[a].y);
+                ctx.lineTo(mouse.x, mouse.y);
+                ctx.stroke();
+            }
+        }
+    }
+}
+
+function init() {
+    particles = [];
+    for (let i = 0; i < particleCount; i++) {
+        let x = Math.random() * canvas.width;
+        let y = Math.random() * canvas.height;
+        particles.push(new Particle(x, y));
+    }
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+    connectParticles();
+    requestAnimationFrame(animate);
+}
+
+init();
+animate();
+</script>
 </body>
 </html>
