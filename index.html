@@ -9,6 +9,7 @@
             padding: 0;
             overflow: hidden;
             background: black;
+            font-family: Arial, sans-serif;
         }
         canvas {
             display: block;
@@ -17,12 +18,17 @@
             left: 0;
             z-index: 0;
         }
-        .circle-image {
+        .content-container {
             position: absolute;
             top: 50%;
-            left: 40%; /* slightly left from center */
+            left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            z-index: 2;
+        }
+        .circle-image {
             width: 250px;
             height: 250px;
             border-radius: 50%;
@@ -34,13 +40,32 @@
             height: 100%;
             object-fit: cover;
         }
+        .text-content {
+            color: white;
+        }
+        .exploit-text {
+            font-size: 72px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+        .lenzy-text {
+            font-size: 24px;
+            font-weight: 300;
+        }
     </style>
 </head>
 <body>
 <canvas id="particles"></canvas>
 
-<div class="circle-image">
-    <img src="p.png" alt="Circular Image">
+<div class="content-container">
+    <div class="circle-image">
+        <img src="p.png" alt="Circular Image">
+    </div>
+    <div class="text-content">
+        <div class="exploit-text">Exploit</div>
+        <div class="lenzy-text">Lenzy.dev</div>
+    </div>
 </div>
 
 <script>
