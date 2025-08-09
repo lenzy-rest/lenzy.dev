@@ -70,7 +70,7 @@
         .audio-control {
             position: absolute;
             top: 20px;
-            left: 20px;
+            right: 20px;
             z-index: 10;
             color: white;
             font-size: 24px;
@@ -124,17 +124,24 @@ const audioControl = document.getElementById('audioControl');
 const backgroundAudio = document.getElementById('backgroundAudio');
 let isAudioPlaying = false;
 
+// Initialize audio as muted
+backgroundAudio.volume = 0;
+
+// Audio control functionality
 audioControl.addEventListener('click', () => {
     if (isAudioPlaying) {
         backgroundAudio.pause();
+        backgroundAudio.volume = 0;
         audioControl.innerHTML = '<i class="fas fa-volume-mute"></i>';
     } else {
         backgroundAudio.play().catch(e => console.log("Audio play failed:", e));
+        backgroundAudio.volume = 1;
         audioControl.innerHTML = '<i class="fas fa-volume-up"></i>';
     }
     isAudioPlaying = !isAudioPlaying;
 });
 
+// Particles animation code
 let particles = [];
 const particleCount = 180;
 const connectionDistance = 150;
