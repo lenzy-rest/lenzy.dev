@@ -67,10 +67,27 @@
         .social-icons a:hover {
             color: orange;
         }
+        .audio-control {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .audio-control:hover {
+            color: orange;
+        }
     </style>
 </head>
 <body>
 <canvas id="particles"></canvas>
+
+<div class="audio-control" id="audioControl">
+    <i class="fas fa-volume-mute"></i>
+</div>
 
 <div class="content-container">
     <div class="circle-image">
@@ -96,9 +113,27 @@
     </div>
 </div>
 
+<audio id="backgroundAudio" loop>
+    <source src="s.mp3" type="audio/mpeg">
+</audio>
+
 <script>
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
+const audioControl = document.getElementById('audioControl');
+const backgroundAudio = document.getElementById('backgroundAudio');
+let isAudioPlaying = false;
+
+audioControl.addEventListener('click', () => {
+    if (isAudioPlaying) {
+        backgroundAudio.pause();
+        audioControl.innerHTML = '<i class="fas fa-volume-mute"></i>';
+    } else {
+        backgroundAudio.play().catch(e => console.log("Audio play failed:", e));
+        audioControl.innerHTML = '<i class="fas fa-volume-up"></i>';
+    }
+    isAudioPlaying = !isAudioPlaying;
+});
 
 let particles = [];
 const particleCount = 180;
