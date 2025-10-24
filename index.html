@@ -1,29 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta content="Lenzy Developer Bio Site" name="description">
+  <meta content="drdos,ssyn, dns amplification" name="keywords">
+  <meta content="https://lenzy.dev" name="application-url">
+  <meta content="lenzy dev" name="application-name">
+  <meta content="index, follow" name="robots">
+
+  <meta property="og:title" content="Lenzy" />
+  <meta property="og:description" content="Lenzy Developer Bio Site" />
+  <meta property="og:url" content="https://lenzy.dev" />
+  <meta property="og:image" content="https://media.discordapp.net/attachments/1352802241370656902/1360000171001516042/Ethrone_server_icon.png" />
+  <meta property="og:image:width" content="256" />
+  <meta property="og:image:height" content="256" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Lenzy" />
+  <meta name="theme-color" content="#8A2BE2">
+
+  <link rel="icon" type="image/png" href="rich.gif">
   <title>Lenzy</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
       background: black;
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       height: 100%;
     }
 
     #page-wrap.blurred {
       filter: blur(14px);
-      -webkit-filter: blur(14px);
       transform: scale(1.02);
     }
     #page-wrap {
-      transition: filter 400ms ease, -webkit-filter 400ms ease, transform 400ms ease;
+      transition: filter 400ms ease, transform 400ms ease;
       height: 100%;
       position: relative;
     }
+
     #overlay {
       position: fixed;
       inset: 0;
@@ -37,10 +55,10 @@
       opacity: 0;
       pointer-events: none;
     }
+
     .gate-button {
       font-family: inherit;
       font-size: 28px;
-      letter-spacing: 1px;
       color: white;
       background: transparent;
       border: none;
@@ -48,13 +66,6 @@
       padding: 18px 28px;
       text-shadow: 0 2px 12px rgba(0,0,0,0.6);
       user-select: none;
-    }
-    .gate-button:focus { outline: none; }
-    .hint {
-      margin-top: 10px;
-      color: #bbb;
-      font-size: 12px;
-      text-align: center;
     }
 
     canvas {
@@ -64,6 +75,7 @@
       left: 0;
       z-index: 0;
     }
+
     .content-container {
       position: absolute;
       top: 50%;
@@ -73,41 +85,125 @@
       align-items: center;
       gap: 40px;
       z-index: 2;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      border-radius: 30px;
+      padding: 40px 60px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
+
     .circle-image {
-      width: 250px;
-      height: 250px;
+      width: 220px;
+      height: 220px;
       border-radius: 50%;
       overflow: hidden;
       border: 3px solid white;
     }
+
     .circle-image img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-    .text-content { color: white; }
+
+    .text-content {
+      color: white;
+    }
+
     .exploit-text {
-      font-size: 72px;
-      font-weight: bold;
+      font-size: 64px;
+      font-weight: 700;
       margin-bottom: 10px;
       line-height: 1;
     }
+
     .lenzy-text {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 300;
       margin-bottom: 20px;
     }
-    .social-icons { display: flex; gap: 20px; }
+
+    .social-icons {
+      display: flex;
+      gap: 20px;
+    }
+
     .social-icons a {
       color: white;
       font-size: 28px;
-      transition: color 0.3s ease;
+      transition: color 0.3s ease, transform 0.3s ease;
     }
-    .social-icons a:hover { color: orange; }
+
+    .social-icons a:hover {
+      color: orange;
+      transform: scale(1.1);
+    }
+
+    .volume-container {
+      position: fixed;
+      top: 25px;
+      right: 30px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(15px);
+      border-radius: 25px; /* Oval shape */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      width: 50px;  /* fits icon perfectly */
+      height: 36px; /* oval height */
+      padding: 0 8px;
+      z-index: 10;
+    }
+
+    .volume-container:hover {
+      width: 150px; /* expand for slider */
+      padding: 0 14px;
+      justify-content: flex-start;
+    }
+
+    .volume-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .volume-slider {
+      position: relative;
+      flex: 1;
+      height: 4px;
+      background: rgba(255,255,255,0.4);
+      border-radius: 2px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      margin-left: 12px;
+    }
+
+    .volume-container:hover .volume-slider {
+      opacity: 1;
+    }
+
+    .volume-knob {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+    }
 
     @media (max-width: 700px) {
-      .content-container { flex-direction: column; gap: 24px; }
+      .content-container {
+        flex-direction: column;
+        gap: 24px;
+        padding: 30px 40px;
+      }
       .exploit-text { font-size: 48px; text-align: center; }
       .lenzy-text { text-align: center; }
     }
@@ -131,24 +227,23 @@
         <div class="exploit-text">Lenzy</div>
         <div class="lenzy-text">Contact - info@lenzy.dev</div>
         <div class="social-icons">
-          <a href="https://discord.com/invite/input" target="_blank" title="Discord">
-            <i class="fab fa-discord"></i>
-          </a>
-          <a href="https://t.me/lenziii" target="_blank" title="Telegram">
-            <i class="fab fa-telegram"></i>
-          </a>
-          <a href="https://instagram.com/lenzy.dev" target="_blank" title="Instagram">
-            <i class="fab fa-instagram"></i>
-          </a>
-          <a href="https://youtube.com/@lenzy-crime" target="_blank" title="YouTube">
-            <i class="fab fa-youtube"></i>
-          </a>
+          <a href="https://discord.com/invite/ethone" target="_blank"><i class="fab fa-discord"></i></a>
+          <a href="https://t.me/lenziii" target="_blank"><i class="fab fa-telegram"></i></a>
+          <a href="https://instagram.com/lenzy.dev" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://youtube.com/@lenzy-crime" target="_blank"><i class="fab fa-youtube"></i></a>
         </div>
+      </div>
+    </div>
+
+    <div class="volume-container" id="volumeBox">
+      <i class="fa-solid fa-volume-high volume-icon"></i>
+      <div class="volume-slider" id="volumeSlider">
+        <div class="volume-knob" id="volumeKnob"></div>
       </div>
     </div>
   </div>
 
-  <audio id="bgm" src="music.mp3" preload="auto"></audio>
+  <audio id="bgm" src="xv.mp3" preload="auto"></audio>
 
   <script>
     (function () {
@@ -169,16 +264,44 @@
       }
 
       overlay.addEventListener('click', enterSite);
-      enterBtn.addEventListener('click', function (e) {
+      enterBtn.addEventListener('click', e => {
         e.stopPropagation();
         enterSite();
       });
     })();
 
-    // Particle background (your original code)
+    const audio = document.getElementById('bgm');
+    const knob = document.getElementById('volumeKnob');
+    const slider = document.getElementById('volumeSlider');
+    let dragging = false;
+    let volume = 1;
+
+    function setVolume(vol) {
+      volume = Math.min(1, Math.max(0, vol));
+      audio.volume = volume;
+      knob.style.left = (volume * 100) + '%';
+    }
+
+    knob.addEventListener('mousedown', e => {
+      dragging = true;
+      e.preventDefault();
+    });
+    window.addEventListener('mouseup', () => dragging = false);
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const rect = slider.getBoundingClientRect();
+      const percent = (e.clientX - rect.left) / rect.width;
+      setVolume(percent);
+    });
+    slider.addEventListener('click', e => {
+      const rect = slider.getBoundingClientRect();
+      const percent = (e.clientX - rect.left) / rect.width;
+      setVolume(percent);
+    });
+    setVolume(1);
+
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
-
     let particles = [];
     const particleCount = 180;
     const connectionDistance = 150;
@@ -225,7 +348,7 @@
           let dy = particles[a].y - particles[b].y;
           let distance = Math.hypot(dx, dy);
           if (distance < connectionDistance) {
-            ctx.strokeStyle = `rgba(255, 255, 255, ${1 - distance / connectionDistance})`;
+            ctx.strokeStyle = `rgba(255,255,255,${1 - distance / connectionDistance})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(particles[a].x, particles[a].y);
@@ -238,7 +361,7 @@
           let dy = particles[a].y - mouse.y;
           let distance = Math.hypot(dx, dy);
           if (distance < connectionDistance) {
-            ctx.strokeStyle = `rgba(255, 255, 255, ${1 - distance / connectionDistance})`;
+            ctx.strokeStyle = `rgba(255,255,255,${1 - distance / connectionDistance})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(particles[a].x, particles[a].y);
@@ -252,9 +375,7 @@
     function init() {
       particles = [];
       for (let i = 0; i < particleCount; i++) {
-        let x = Math.random() * canvas.width;
-        let y = Math.random() * canvas.height;
-        particles.push(new Particle(x, y));
+        particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
       }
     }
 
