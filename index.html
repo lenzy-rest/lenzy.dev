@@ -1,27 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta content="Lenzy Developer Bio Site" name="description">
-  <meta content="drdos,ssyn, dns amplification" name="keywords">
-  <meta content="https://lenzy.dev" name="application-url">
-  <meta content="lenzy dev" name="application-name">
-  <meta content="index, follow" name="robots">
-
-  <meta property="og:title" content="Lenzy" />
-  <meta property="og:description" content="Lenzy Developer Bio Site" />
-  <meta property="og:url" content="https://lenzy.dev" />
-  <meta property="og:image" content="https://media.discordapp.net/attachments/1352802241370656902/1360000171001516042/Ethrone_server_icon.png" />
-  <meta property="og:image:width" content="256" />
-  <meta property="og:image:height" content="256" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Lenzy" />
-  <meta name="theme-color" content="#8A2BE2">
-
-  <link rel="icon" type="image/png" href="rich.gif">
   <title>Lenzy</title>
+
+  <!-- Font Awesome for social icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
     html, body {
       margin: 0;
@@ -76,6 +62,7 @@
       z-index: 0;
     }
 
+    /* Main Lenzy box */
     .content-container {
       position: absolute;
       top: 50%;
@@ -140,6 +127,7 @@
       transform: scale(1.1);
     }
 
+    /* Volume control box (oval) */
     .volume-container {
       position: fixed;
       top: 25px;
@@ -246,6 +234,7 @@
   <audio id="bgm" src="xv.mp3" preload="auto"></audio>
 
   <script>
+    // Overlay unlock
     (function () {
       const overlay = document.getElementById('overlay');
       const pageWrap = document.getElementById('page-wrap');
@@ -255,21 +244,15 @@
       async function enterSite() {
         pageWrap.classList.remove('blurred');
         overlay.classList.add('hidden');
-        try {
-          audio.currentTime = 0;
-          await audio.play();
-        } catch (e) {
-          console.warn('Autoplay blocked:', e);
-        }
+        try { audio.currentTime = 0; await audio.play(); } 
+        catch(e) { console.warn('Autoplay blocked:', e); }
       }
 
       overlay.addEventListener('click', enterSite);
-      enterBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        enterSite();
-      });
+      enterBtn.addEventListener('click', e => { e.stopPropagation(); enterSite(); });
     })();
 
+    // Volume Control
     const audio = document.getElementById('bgm');
     const knob = document.getElementById('volumeKnob');
     const slider = document.getElementById('volumeSlider');
@@ -282,10 +265,7 @@
       knob.style.left = (volume * 100) + '%';
     }
 
-    knob.addEventListener('mousedown', e => {
-      dragging = true;
-      e.preventDefault();
-    });
+    knob.addEventListener('mousedown', e => { dragging = true; e.preventDefault(); });
     window.addEventListener('mouseup', () => dragging = false);
     window.addEventListener('mousemove', e => {
       if (!dragging) return;
@@ -300,6 +280,7 @@
     });
     setVolume(1);
 
+    // Particle background
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -307,87 +288,36 @@
     const connectionDistance = 150;
     let mouse = { x: null, y: null };
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-
-    window.addEventListener('mousemove', e => {
-      mouse.x = e.x;
-      mouse.y = e.y;
-    });
+    window.addEventListener('mousemove', e => { mouse.x = e.x; mouse.y = e.y; });
 
     class Particle {
-      constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.vx = (Math.random() - 0.5) * 1.2;
-        this.vy = (Math.random() - 0.5) * 1.2;
-        this.size = 3;
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-      }
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = "white";
-        ctx.fill();
-      }
+      constructor(x, y) { this.x=x; this.y=y; this.vx=(Math.random()-0.5)*1.2; this.vy=(Math.random()-0.5)*1.2; this.size=3; }
+      update() { this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>canvas.width)this.vx*=-1; if(this.y<0||this.y>canvas.height)this.vy*=-1; }
+      draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fillStyle="white"; ctx.fill(); }
     }
 
     function connectParticles() {
-      for (let a = 0; a < particles.length; a++) {
-        for (let b = a + 1; b < particles.length; b++) {
-          let dx = particles[a].x - particles[b].x;
-          let dy = particles[a].y - particles[b].y;
-          let distance = Math.hypot(dx, dy);
-          if (distance < connectionDistance) {
-            ctx.strokeStyle = `rgba(255,255,255,${1 - distance / connectionDistance})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particles[a].x, particles[a].y);
-            ctx.lineTo(particles[b].x, particles[b].y);
-            ctx.stroke();
-          }
+      for(let a=0;a<particles.length;a++){
+        for(let b=a+1;b<particles.length;b++){
+          let dx=particles[a].x-particles[b].x, dy=particles[a].y-particles[b].y;
+          let distance=Math.hypot(dx,dy);
+          if(distance<connectionDistance){ ctx.strokeStyle=`rgba(255,255,255,${1-distance/connectionDistance})`; ctx.lineWidth=1;
+          ctx.beginPath(); ctx.moveTo(particles[a].x,particles[a].y); ctx.lineTo(particles[b].x,particles[b].y); ctx.stroke(); }
         }
-        if (mouse.x != null && mouse.y != null) {
-          let dx = particles[a].x - mouse.x;
-          let dy = particles[a].y - mouse.y;
-          let distance = Math.hypot(dx, dy);
-          if (distance < connectionDistance) {
-            ctx.strokeStyle = `rgba(255,255,255,${1 - distance / connectionDistance})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particles[a].x, particles[a].y);
-            ctx.lineTo(mouse.x, mouse.y);
-            ctx.stroke();
-          }
+        if(mouse.x!=null && mouse.y!=null){
+          let dx=particles[a].x-mouse.x, dy=particles[a].y-mouse.y; let distance=Math.hypot(dx,dy);
+          if(distance<connectionDistance){ ctx.strokeStyle=`rgba(255,255,255,${1-distance/connectionDistance})`; ctx.lineWidth=1;
+          ctx.beginPath(); ctx.moveTo(particles[a].x,particles[a].y); ctx.lineTo(mouse.x,mouse.y); ctx.stroke(); }
         }
       }
     }
 
-    function init() {
-      particles = [];
-      for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
-      }
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => { p.update(); p.draw(); });
-      connectParticles();
-      requestAnimationFrame(animate);
-    }
-
-    init();
-    animate();
+    function init(){ particles=[]; for(let i=0;i<particleCount;i++){ particles.push(new Particle(Math.random()*canvas.width, Math.random()*canvas.height)); } }
+    function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.update();p.draw();}); connectParticles(); requestAnimationFrame(animate); }
+    init(); animate();
   </script>
 </body>
 </html>
