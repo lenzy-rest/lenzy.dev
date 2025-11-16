@@ -1,323 +1,418 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lenzy</title>
+<meta charset="UTF-8">
+<title>Lenzy</title>
 
-  <!-- Font Awesome for social icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@font-face {
+    font-family: 'BBH Sans Hegarty';
+    src: url('fonts/BBHSansHegarty-Regular.woff2') format('woff2'),
+         url('fonts/BBHSansHegarty-Regular.woff') format('woff'),
+         url('fonts/BBHSansHegarty-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: black;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      height: 100%;
-    }
+#captcha-screen {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,20,20,0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999999;
+    flex-direction: column;
+    color: white;
+    font-family: 'BBH Sans Hegarty', sans-serif;
+}
 
-    #page-wrap.blurred {
-      filter: blur(14px);
-      transform: scale(1.02);
-    }
-    #page-wrap {
-      transition: filter 400ms ease, transform 400ms ease;
-      height: 100%;
-      position: relative;
-    }
+#captcha-box {
+    background: #1b1b1b;
+    padding: 15px 40px;
+    border-radius: 18px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+    text-align: center;
+}
 
-    #overlay {
-      position: fixed;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      background: rgba(0,0,0,0.65);
-      z-index: 9999;
-      transition: opacity 250ms ease;
-    }
-    #overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
+#captcha-checkbox {
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+}
 
-    .gate-button {
-      font-family: inherit;
-      font-size: 28px;
-      color: white;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 18px 28px;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-      user-select: none;
-    }
+#captcha-label {
+    font-size: 22px;
+    margin-left: 12px;
+}
 
-    canvas {
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 0;
-    }
+#main-content {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.9s ease;
+}
 
-    /* Main Lenzy box */
-    .content-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: flex;
-      align-items: center;
-      gap: 40px;
-      z-index: 2;
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(20px);
-      border-radius: 30px;
-      padding: 40px 60px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
 
-    .circle-image {
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 3px solid white;
-    }
+body {
+    background: #121212;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'BBH Sans Hegarty', sans-serif;
+    color: white;
+}
 
-    .circle-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+#volume-box {
+    position: fixed;
+    top: 20px;
+    right: 1850px;
+    background: #1e1e1e;
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0,0,0,0.4);
+}
 
-    .text-content {
-      color: white;
-    }
+#volume-box img {
+    width: 32px;
+    height: 32px;
+}
 
-    .exploit-text {
-      font-size: 64px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      line-height: 1;
-    }
+#copy-popup {
+    position: fixed;
+    left: 83%;
+    top: 680px;
+    transform: translateX(-50%);
+    background: #0D8C2B;
+    padding: 14px 26px;
+    border-radius: 12px;
+    color: white;
+    font-size: 18px;
+    display: none;
+    box-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
 
-    .lenzy-text {
-      font-size: 22px;
-      font-weight: 300;
-      margin-bottom: 20px;
-    }
+.wrapper {
+    position: relative;
+    top: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-    .social-icons {
-      display: flex;
-      gap: 20px;
-    }
+.frame {
+    width: 210px;
+    height: 200px;
+    background-color: #121212;
+    border-radius: 22px;
+    border: 4px dashed rgba(90,170,255,1);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 35px rgba(90,170,255,0.9),
+                0 0 400px rgba(90,170,255,0.5),
+                0 0 300px rgba(90,170,255,0.25);
+}
 
-    .social-icons a {
-      color: white;
-      font-size: 28px;
-      transition: color 0.3s ease, transform 0.3s ease;
-    }
+.frame img {
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+    object-fit: cover;
+}
 
-    .social-icons a:hover {
-      color: orange;
-      transform: scale(1.1);
-    }
+.text {
+    color: white;
+    font-size: 44px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    min-height: 60px;
+    border-right: 3px solid white;
+    padding-right: 5px;
+}
 
-    /* Volume control box (oval) */
-    .volume-container {
-      position: fixed;
-      top: 25px;
-      right: 30px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.15);
-      backdrop-filter: blur(15px);
-      border-radius: 25px; /* Oval shape */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      overflow: hidden;
-      width: 50px;  /* fits icon perfectly */
-      height: 36px; /* oval height */
-      padding: 0 8px;
-      z-index: 10;
-    }
+.highlight {
+    position: relative;
+    display: inline-block;
+}
 
-    .volume-container:hover {
-      width: 150px; /* expand for slider */
-      padding: 0 14px;
-      justify-content: flex-start;
-    }
+.highlight::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 4px;
+    background-color: red;
+    transform: translateY(-50%);
+}
 
-    .volume-icon {
-      font-size: 20px;
-      flex-shrink: 0;
-    }
+.subtext {
+    margin-top: 12px;
+    font-size: 16px;
+    color: #888;
+    text-align: center;
+}
 
-    .volume-slider {
-      position: relative;
-      flex: 1;
-      height: 4px;
-      background: rgba(255,255,255,0.4);
-      border-radius: 2px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      margin-left: 12px;
-    }
+.box-container {
+    margin-top: 140px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
 
-    .volume-container:hover .volume-slider {
-      opacity: 1;
-    }
+.info-box {
+    width: 570px;
+    height: 110px;
+    background: #1e1e1e;
+    border-radius: 18px;
+    padding: 20px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 0 8px rgba(0,0,0,0.4);
+}
 
-    .volume-knob {
-      position: absolute;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: white;
-      cursor: pointer;
-    }
+.project-link {
+    width: 100%;
+    height: 100%;
+}
 
-    @media (max-width: 700px) {
-      .content-container {
-        flex-direction: column;
-        gap: 24px;
-        padding: 30px 40px;
-      }
-      .exploit-text { font-size: 48px; text-align: center; }
-      .lenzy-text { text-align: center; }
-    }
-  </style>
+.project-gif {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.tg-button {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #222;
+    border-radius: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    transition: 0.2s;
+}
+
+.tg-button:hover {
+    background: #333;
+    filter: brightness(1.3);
+}
+
+.tg-button img {
+    width: 22px;
+    height: 22px;
+}
+</style>
 </head>
+
 <body>
-  <div id="overlay" aria-live="polite">
-    <div style="text-align:center">
-      <button class="gate-button" id="enterBtn">[ Click Me ]</button>
+
+<div id="captcha-screen">
+    <div id="captcha-box">
+        <label style="display:flex; align-items:center; justify-content:center;">
+            <input id="captcha-checkbox" type="checkbox">
+            <span id="captcha-label">I'm not a robot</span>
+        </label>
     </div>
-  </div>
+</div>
 
-  <div id="page-wrap" class="blurred">
-    <canvas id="particles"></canvas>
+<div id="main-content">
 
-    <div class="content-container">
-      <div class="circle-image">
-        <img src="d050e52967b2ace51c1875a80f7776da.jpg" alt="Circular Image">
-      </div>
-      <div class="text-content">
-        <div class="exploit-text">Lenzy</div>
-        <div class="lenzy-text">Contact - info@lenzy.dev</div>
-        <div class="social-icons">
-          <a href="https://discord.com/invite/ethone" target="_blank"><i class="fab fa-discord"></i></a>
-          <a href="https://t.me/lenziii" target="_blank"><i class="fab fa-telegram"></i></a>
-          <a href="https://instagram.com/lenzy.dev" target="_blank"><i class="fab fa-instagram"></i></a>
-          <a href="https://youtube.com/@lenzy-crime" target="_blank"><i class="fab fa-youtube"></i></a>
+<div id="volume-box">
+    <img id="volume-icon" src="volume.png">
+</div>
+
+<div id="copy-popup">✔ Address Copied</div>
+
+<div class="wrapper">
+    <div class="frame">
+        <img src="lenzy.jpg" alt="Image">
+    </div>
+    <div class="text" id="typewriter"></div>
+    <div class="subtext">About Me</div>
+    <div class="subtext">Im 16 years old im a great backend developer i code python java php</div>
+</div>
+
+<div class="box-container">
+
+    <div class="info-box">
+        <a href="https://ethone.net/" class="project-link">
+            <img src="ethone.gif" class="project-gif">
+        </a>
+    </div>
+
+    <div class="info-box">
+        <a href="https://t.me/lenziii" class="tg-button" target="_blank">
+            <img src="telegram.png">
+            <span>Telegram</span>
+        </a>
+
+        <a href="https://discord.com/users/1382730149245616220" class="tg-button" target="_blank">
+            <img src="discord.png">
+            <span>Discord</span>
+        </a>
+    </div>
+
+    <div class="info-box">
+        <div class="tg-button" onclick="copyAddress('LfcEEWvm7CgDBAiwoDNjct2Di4q1nZPePq')">
+            <img src="ltc.png">
+            <span>Litecoin (LTC)</span>
         </div>
-      </div>
+        <div class="tg-button" onclick="copyAddress('bc1q28ps9vk2eqstgsg8wsk2ajq63jdfy5wdx5ctzx')">
+            <img src="bitcoin.png">
+            <span>Bitcoin (BTC)</span>
+        </div>
     </div>
 
-    <div class="volume-container" id="volumeBox">
-      <i class="fa-solid fa-volume-high volume-icon"></i>
-      <div class="volume-slider" id="volumeSlider">
-        <div class="volume-knob" id="volumeKnob"></div>
-      </div>
-    </div>
-  </div>
+</div>
+</div> 
 
-  <audio id="bgm" src="xv.mp3" preload="auto"></audio>
+<audio id="bgm" src="4-raws.mp3" loop></audio>
 
-  <script>
-    // Overlay unlock
-    (function () {
-      const overlay = document.getElementById('overlay');
-      const pageWrap = document.getElementById('page-wrap');
-      const audio = document.getElementById('bgm');
-      const enterBtn = document.getElementById('enterBtn');
+<script>
+document.getElementById("captcha-checkbox").addEventListener("change", function () {
+    if (this.checked) {
+        document.getElementById("captcha-screen").style.display = "none";
+        const main = document.getElementById("main-content");
+        main.style.opacity = "1";
+        main.style.pointerEvents = "auto";
 
-      async function enterSite() {
-        pageWrap.classList.remove('blurred');
-        overlay.classList.add('hidden');
-        try { audio.currentTime = 0; await audio.play(); } 
-        catch(e) { console.warn('Autoplay blocked:', e); }
-      }
-
-      overlay.addEventListener('click', enterSite);
-      enterBtn.addEventListener('click', e => { e.stopPropagation(); enterSite(); });
-    })();
-
-    // Volume Control
-    const audio = document.getElementById('bgm');
-    const knob = document.getElementById('volumeKnob');
-    const slider = document.getElementById('volumeSlider');
-    let dragging = false;
-    let volume = 1;
-
-    function setVolume(vol) {
-      volume = Math.min(1, Math.max(0, vol));
-      audio.volume = volume;
-      knob.style.left = (volume * 100) + '%';
+        document.getElementById("bgm").play();
     }
+});
 
-    knob.addEventListener('mousedown', e => { dragging = true; e.preventDefault(); });
-    window.addEventListener('mouseup', () => dragging = false);
-    window.addEventListener('mousemove', e => {
-      if (!dragging) return;
-      const rect = slider.getBoundingClientRect();
-      const percent = (e.clientX - rect.left) / rect.width;
-      setVolume(percent);
-    });
-    slider.addEventListener('click', e => {
-      const rect = slider.getBoundingClientRect();
-      const percent = (e.clientX - rect.left) / rect.width;
-      setVolume(percent);
-    });
-    setVolume(1);
+const messages = [
+    { text: "Hi, My name is ", highlight: "Lenzy" },
+    { text: "I love ", highlight: "Money" }
+];
 
-    // Particle background
-    const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    const particleCount = 180;
-    const connectionDistance = 150;
-    let mouse = { x: null, y: null };
+const element = document.getElementById("typewriter");
+let msgIndex = 0, charIndex = 0, typing = true;
 
-    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    window.addEventListener('mousemove', e => { mouse.x = e.x; mouse.y = e.y; });
+function typeDeleteLoop() {
+    const current = messages[msgIndex];
+    const full = current.text + current.highlight;
 
-    class Particle {
-      constructor(x, y) { this.x=x; this.y=y; this.vx=(Math.random()-0.5)*1.2; this.vy=(Math.random()-0.5)*1.2; this.size=3; }
-      update() { this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>canvas.width)this.vx*=-1; if(this.y<0||this.y>canvas.height)this.vy*=-1; }
-      draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fillStyle="white"; ctx.fill(); }
-    }
-
-    function connectParticles() {
-      for(let a=0;a<particles.length;a++){
-        for(let b=a+1;b<particles.length;b++){
-          let dx=particles[a].x-particles[b].x, dy=particles[a].y-particles[b].y;
-          let distance=Math.hypot(dx,dy);
-          if(distance<connectionDistance){ ctx.strokeStyle=`rgba(255,255,255,${1-distance/connectionDistance})`; ctx.lineWidth=1;
-          ctx.beginPath(); ctx.moveTo(particles[a].x,particles[a].y); ctx.lineTo(particles[b].x,particles[b].y); ctx.stroke(); }
+    if (typing) {
+        charIndex++;
+        if (charIndex <= full.length) {
+            updateDisplay(current, charIndex);
+            setTimeout(typeDeleteLoop, 120);
+        } else {
+            typing = false;
+            setTimeout(typeDeleteLoop, 2000);
         }
-        if(mouse.x!=null && mouse.y!=null){
-          let dx=particles[a].x-mouse.x, dy=particles[a].y-mouse.y; let distance=Math.hypot(dx,dy);
-          if(distance<connectionDistance){ ctx.strokeStyle=`rgba(255,255,255,${1-distance/connectionDistance})`; ctx.lineWidth=1;
-          ctx.beginPath(); ctx.moveTo(particles[a].x,particles[a].y); ctx.lineTo(mouse.x,mouse.y); ctx.stroke(); }
+    } else {
+        charIndex--;
+        if (charIndex >= 0) {
+            updateDisplay(current, charIndex);
+            setTimeout(typeDeleteLoop, 100);
+        } else {
+            typing = true;
+            msgIndex = (msgIndex + 1) % messages.length;
+            setTimeout(typeDeleteLoop, 120);
         }
-      }
+    }
+}
+
+function updateDisplay(current, count) {
+    let normal = "";
+    let highlight = "";
+
+    if (count <= current.text.length) {
+        normal = current.text.substring(0, count);
+    } else {
+        normal = current.text;
+        highlight = current.highlight.substring(0, count - current.text.length);
     }
 
-    function init(){ particles=[]; for(let i=0;i<particleCount;i++){ particles.push(new Particle(Math.random()*canvas.width, Math.random()*canvas.height)); } }
-    function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.update();p.draw();}); connectParticles(); requestAnimationFrame(animate); }
-    init(); animate();
-  </script>
+    element.innerHTML = normal + (highlight ? `<span class="highlight">${highlight}</span>` : "");
+}
+
+typeDeleteLoop();
+
+let volumeOn = true;
+document.getElementById("volume-box").addEventListener("click", () => {
+    const audio = document.getElementById("bgm");
+    const icon = document.getElementById("volume-icon");
+
+    volumeOn = !volumeOn;
+
+    if (volumeOn) {
+        audio.muted = false;
+        icon.src = "volume.png";
+    } else {
+        audio.muted = true;
+        icon.src = "muted.png";
+    }
+});
+
+function copyAddress(addr) {
+    navigator.clipboard.writeText(addr);
+    let popup = document.getElementById("copy-popup");
+    popup.style.display = "block";
+    setTimeout(() => popup.style.display = "none", 2000);
+}
+</script>
+
+<script>
+document.addEventListener("contextmenu", e => {
+    e.preventDefault();
+    location.href = "https://ethone.net";
+});
+
+document.addEventListener("keydown", e => {
+    if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && e.key === "I") ||
+        (e.ctrlKey && e.shiftKey && e.key === "C") ||
+        (e.ctrlKey && e.shiftKey && e.key === "J") ||
+        (e.ctrlKey && e.key === "U") ||
+        (e.ctrlKey && e.key === "S")
+    ) {
+        e.preventDefault();
+        location.href = "https://ethone.net";
+    }
+});
+
+setInterval(() => {
+    if (
+        window.outerWidth - window.innerWidth > 200 ||
+        window.outerHeight - window.innerHeight > 200
+    ) {
+        location.href = "https://ethone.net";
+    }
+}, 500);
+
+(function() {
+    let el = new Image();
+    Object.defineProperty(el, "id", {
+        get: () => location.href = "https://ethone.net"
+    });
+    console.log(el);
+})();
+</script>
+
 </body>
 </html>
