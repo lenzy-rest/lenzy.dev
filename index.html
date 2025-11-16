@@ -30,9 +30,9 @@
 }
 
 #captcha-box {
-    background: #1b1b1b;
-    padding: 15px 40px;
-    border-radius: 18px;
+    background: #878A8A;
+    padding: 15px 25px;
+    border-radius: 5px;
     box-shadow: 0 0 25px rgba(0,0,0,0.5);
     text-align: center;
 }
@@ -53,7 +53,6 @@
     pointer-events: none;
     transition: opacity 0.9s ease;
 }
-
 
 body {
     background: #121212;
@@ -96,8 +95,14 @@ body {
     border-radius: 12px;
     color: white;
     font-size: 18px;
-    display: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
     box-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
+
+#copy-popup.show {
+    opacity: 1;
 }
 
 .wrapper {
@@ -113,14 +118,13 @@ body {
     height: 200px;
     background-color: #121212;
     border-radius: 22px;
-    border: 4px dashed rgba(90,170,255,1);
-    overflow: hidden;
+    border: 5px dashed rgba(90,170,255,1);
+    padding: 3px;
+    box-sizing: border-box;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 0 35px rgba(90,170,255,0.9),
-                0 0 400px rgba(90,170,255,0.5),
-                0 0 300px rgba(90,170,255,0.25);
+    overflow: visible;
 }
 
 .frame img {
@@ -128,6 +132,10 @@ body {
     height: 100%;
     border-radius: 18px;
     object-fit: cover;
+    box-shadow:
+        0 0 35px rgba(90,170,255,0.9),
+        0 0 400px rgba(90,170,255,0.5),
+        0 0 300px rgba(90,170,255,0.25);
 }
 
 .text {
@@ -185,6 +193,14 @@ body {
     justify-content: center;
     overflow: hidden;
     box-shadow: 0 0 8px rgba(0,0,0,0.4);
+}
+
+.info-box .box-title {
+    font-family: 'BBH Sans Hegarty', sans-serif;
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 6px;
+    display: block;
 }
 
 .project-link {
@@ -251,18 +267,20 @@ body {
     </div>
     <div class="text" id="typewriter"></div>
     <div class="subtext">About Me</div>
-    <div class="subtext">Im 16 years old im a great backend developer i code python java php</div>
+    <div class="subtext">Im a 16 year old backend developer, Skilled in python java php, I own services with affordable cost</div>
 </div>
 
 <div class="box-container">
 
     <div class="info-box">
+        <span class="box-title">Project</span>
         <a href="https://ethone.net/" class="project-link">
             <img src="ethone.gif" class="project-gif">
         </a>
     </div>
 
     <div class="info-box">
+        <span class="box-title">Socials</span>
         <a href="https://t.me/lenziii" class="tg-button" target="_blank">
             <img src="telegram.png">
             <span>Telegram</span>
@@ -275,6 +293,7 @@ body {
     </div>
 
     <div class="info-box">
+        <span class="box-title">Donations</span>
         <div class="tg-button" onclick="copyAddress('LfcEEWvm7CgDBAiwoDNjct2Di4q1nZPePq')">
             <img src="ltc.png">
             <span>Litecoin (LTC)</span>
@@ -297,7 +316,6 @@ document.getElementById("captcha-checkbox").addEventListener("change", function 
         const main = document.getElementById("main-content");
         main.style.opacity = "1";
         main.style.pointerEvents = "auto";
-
         document.getElementById("bgm").play();
     }
 });
@@ -371,8 +389,12 @@ document.getElementById("volume-box").addEventListener("click", () => {
 function copyAddress(addr) {
     navigator.clipboard.writeText(addr);
     let popup = document.getElementById("copy-popup");
-    popup.style.display = "block";
-    setTimeout(() => popup.style.display = "none", 2000);
+
+    popup.classList.add("show");
+
+    setTimeout(() => {
+        popup.classList.remove("show");
+    }, 1500);
 }
 </script>
 
