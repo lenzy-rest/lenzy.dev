@@ -15,6 +15,10 @@
     font-display: swap;
 }
 
+* {
+    cursor: url('cursor.png'), auto;
+}
+
 #captcha-screen {
     position: fixed;
     inset: 0;
@@ -65,10 +69,16 @@ body {
     color: white;
 }
 
-#volume-box {
+#volume-container {
     position: fixed;
     top: 20px;
-    right: 1850px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#volume-box {
     background: #1e1e1e;
     width: 55px;
     height: 55px;
@@ -78,11 +88,63 @@ body {
     align-items: center;
     cursor: pointer;
     box-shadow: 0 0 8px rgba(0,0,0,0.4);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+#volume-box:hover {
+    width: 180px;
 }
 
 #volume-box img {
     width: 32px;
     height: 32px;
+    transition: transform 0.3s ease;
+}
+
+#volume-box:hover img {
+    transform: scale(0.9);
+}
+
+#volume-control {
+    width: 0;
+    opacity: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+#volume-box:hover #volume-control {
+    width: 100px;
+    opacity: 1;
+    margin-left: 10px;
+}
+
+#volume-slider {
+    width: 100%;
+    height: 5px;
+    border-radius: 5px;
+    background: #444;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+}
+
+#volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: none;
 }
 
 #copy-popup {
@@ -172,6 +234,29 @@ body {
     font-size: 16px;
     color: #888;
     text-align: center;
+    max-width: 600px;
+    line-height: 1.5;
+}
+
+.social-icons {
+    margin-top: 30px;
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+}
+
+.social-icon {
+    display: inline-block;
+}
+
+.social-icon img {
+    width: 32px;
+    height: 32px;
+    transition: transform 0.2s ease;
+}
+
+.social-icon:hover img {
+    transform: scale(1.1);
 }
 
 .box-container {
@@ -255,8 +340,13 @@ body {
 
 <div id="main-content">
 
-<div id="volume-box">
-    <img id="volume-icon" src="volume.png">
+<div id="volume-container">
+    <div id="volume-box">
+        <img id="volume-icon" src="volume.png">
+        <div id="volume-control">
+            <input type="range" id="volume-slider" min="0" max="100" value="50">
+        </div>
+    </div>
 </div>
 
 <div id="copy-popup">✔ Address Copied</div>
@@ -268,41 +358,19 @@ body {
     <div class="text" id="typewriter"></div>
     <div class="subtext">About Me</div>
     <div class="subtext">Im a 16 year old backend developer, Skilled in python java php, I own services with affordable cost</div>
+    
+    <div class="social-icons">
+        <a href="https://discord.gg/ethone" class="social-icon" target="_blank">
+            <img src="discord.png" alt="Discord">
+        </a>
+        <a href="https://t.me/lenziii" class="social-icon" target="_blank">
+            <img src="telegram.png" alt="Telegram">
+        </a>
+        <a href="https://ethone.net" class="social-icon" target="_blank">
+            <img src="website.png" alt="Website">
+        </a>
+    </div>
 </div>
-
-<div class="box-container">
-
-    <div class="info-box">
-        <span class="box-title">Project</span>
-        <a href="https://ethone.net/" class="project-link">
-            <img src="ethone.gif" class="project-gif">
-        </a>
-    </div>
-
-    <div class="info-box">
-        <span class="box-title">Socials</span>
-        <a href="https://t.me/lenziii" class="tg-button" target="_blank">
-            <img src="telegram.png">
-            <span>Telegram</span>
-        </a>
-
-        <a href="https://discord.com/users/1382730149245616220" class="tg-button" target="_blank">
-            <img src="discord.png">
-            <span>Discord</span>
-        </a>
-    </div>
-
-    <div class="info-box">
-        <span class="box-title">Donations</span>
-        <div class="tg-button" onclick="copyAddress('LfcEEWvm7CgDBAiwoDNjct2Di4q1nZPePq')">
-            <img src="ltc.png">
-            <span>Litecoin (LTC)</span>
-        </div>
-        <div class="tg-button" onclick="copyAddress('bc1q28ps9vk2eqstgsg8wsk2ajq63jdfy5wdx5ctzx')">
-            <img src="bitcoin.png">
-            <span>Bitcoin (BTC)</span>
-        </div>
-    </div>
 
 </div>
 </div> 
@@ -371,15 +439,35 @@ function updateDisplay(current, count) {
 typeDeleteLoop();
 
 let volumeOn = true;
-document.getElementById("volume-box").addEventListener("click", () => {
-    const audio = document.getElementById("bgm");
-    const icon = document.getElementById("volume-icon");
+const audio = document.getElementById("bgm");
+const volumeSlider = document.getElementById("volume-slider");
 
+audio.volume = volumeSlider.value / 100;
+
+volumeSlider.addEventListener("input", function() {
+    audio.volume = this.value / 100;
+    
+    const icon = document.getElementById("volume-icon");
+    if (this.value == 0) {
+        icon.src = "muted.png";
+        volumeOn = false;
+    } else {
+        icon.src = "volume.png";
+        volumeOn = true;
+    }
+});
+
+document.getElementById("volume-box").addEventListener("click", (e) => {
+    if (e.target.id === "volume-slider") return;
+    
+    const icon = document.getElementById("volume-icon");
+    
     volumeOn = !volumeOn;
 
     if (volumeOn) {
         audio.muted = false;
         icon.src = "volume.png";
+        volumeSlider.value = audio.volume * 100;
     } else {
         audio.muted = true;
         icon.src = "muted.png";
