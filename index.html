@@ -19,39 +19,84 @@
     cursor: url('cursor.png'), auto;
 }
 
+/* ── CAPTCHA ── */
 #captcha-screen {
     position: fixed;
     inset: 0;
-    background: rgba(20,20,20,0.85);
-    backdrop-filter: blur(10px);
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(18px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999999;
     flex-direction: column;
-    color: white;
-    font-family: 'BBH Sans Hegarty', sans-serif;
 }
 
 #captcha-box {
-    background: #878A8A;
-    padding: 15px 25px;
-    border-radius: 5px;
-    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+    background: #141414;
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 32px 44px;
+    border-radius: 16px;
     text-align: center;
+    box-shadow: 0 0 60px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
 }
 
-#captcha-checkbox {
-    width: 26px;
-    height: 26px;
+#captcha-title {
+    font-family: 'BBH Sans Hegarty', sans-serif;
+    font-size: 15px;
+    color: #666;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+#captcha-btn {
+    background: #1a1a1a;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 14px 32px;
+    color: #f0f0f0;
+    font-family: 'BBH Sans Hegarty', sans-serif;
+    font-size: 17px;
+    letter-spacing: 0.02em;
     cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-#captcha-label {
-    font-size: 22px;
-    margin-left: 12px;
+#captcha-btn:hover {
+    background: #222;
+    border-color: rgba(255,255,255,0.18);
+    transform: translateY(-1px);
 }
 
+#captcha-btn.verified {
+    border-color: rgba(74,200,100,0.4);
+    color: #6dde8a;
+    background: #0f1f14;
+    pointer-events: none;
+}
+
+#captcha-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #444;
+    transition: background 0.3s ease;
+    flex-shrink: 0;
+}
+
+#captcha-btn.verified #captcha-dot {
+    background: #6dde8a;
+    box-shadow: 0 0 8px rgba(109,222,138,0.6);
+}
+
+/* ── MAIN ── */
 #main-content {
     opacity: 0;
     pointer-events: none;
@@ -69,6 +114,7 @@ body {
     color: white;
 }
 
+/* ── VOLUME ── */
 #volume-container {
     position: fixed;
     top: 20px;
@@ -147,6 +193,7 @@ body {
     border: none;
 }
 
+/* ── COPY POPUP ── */
 #copy-popup {
     position: fixed;
     left: 83%;
@@ -167,6 +214,7 @@ body {
     opacity: 1;
 }
 
+/* ── LAYOUT ── */
 .wrapper {
     position: relative;
     top: 70px;
@@ -238,27 +286,49 @@ body {
     line-height: 1.5;
 }
 
+/* ── SOCIAL BUTTONS ── */
 .social-icons {
     margin-top: 30px;
     display: flex;
-    gap: 25px;
+    gap: 12px;
     justify-content: center;
 }
 
-.social-icon {
-    display: inline-block;
+.social-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1a1a1a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 10px 18px;
+    text-decoration: none;
+    color: #aaa;
+    font-family: 'BBH Sans Hegarty', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    transition: all 0.22s ease;
 }
 
-.social-icon img {
-    width: 32px;
-    height: 32px;
-    transition: transform 0.2s ease;
+.social-btn img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.75;
+    transition: opacity 0.2s;
 }
 
-.social-icon:hover img {
-    transform: scale(1.1);
+.social-btn:hover {
+    background: #222;
+    border-color: rgba(255,255,255,0.16);
+    color: #fff;
+    transform: translateY(-2px);
 }
 
+.social-btn:hover img {
+    opacity: 1;
+}
+
+/* ── INFO BOXES ── */
 .box-container {
     margin-top: 140px;
     display: flex;
@@ -329,12 +399,14 @@ body {
 
 <body>
 
+<!-- CAPTCHA -->
 <div id="captcha-screen">
     <div id="captcha-box">
-        <label style="display:flex; align-items:center; justify-content:center;">
-            <input id="captcha-checkbox" type="checkbox">
-            <span id="captcha-label">I'm not a robot</span>
-        </label>
+        <span id="captcha-title">Verify to continue</span>
+        <button id="captcha-btn" onclick="verifyCaptcha()">
+            <span id="captcha-dot"></span>
+            <span id="captcha-text">Click to verify</span>
+        </button>
     </div>
 </div>
 
@@ -360,33 +432,35 @@ body {
     <div class="subtext">Im a 16 year old backend developer, Skilled in python java php, I own services with affordable cost</div>
     
     <div class="social-icons">
-        <a href="https://discord.gg/ethone" class="social-icon" target="_blank">
+        <a href="https://discord.gg/ethone" class="social-btn" target="_blank">
             <img src="discord.png" alt="Discord">
+            Discord
         </a>
-        <a href="https://t.me/lenziii" class="social-icon" target="_blank">
+        <a href="https://t.me/lenziii" class="social-btn" target="_blank">
             <img src="telegram.png" alt="Telegram">
-        </a>
-        <a href="https://ethone.net" class="social-icon" target="_blank">
-            <img src="website.png" alt="Website">
+            Telegram
         </a>
     </div>
 </div>
 
 </div>
-</div> 
 
 <audio id="bgm" src="maxa.mp3" loop></audio>
 
 <script>
-document.getElementById("captcha-checkbox").addEventListener("change", function () {
-    if (this.checked) {
+function verifyCaptcha() {
+    const btn = document.getElementById("captcha-btn");
+    const text = document.getElementById("captcha-text");
+    btn.classList.add("verified");
+    text.textContent = "Verified";
+    setTimeout(() => {
         document.getElementById("captcha-screen").style.display = "none";
         const main = document.getElementById("main-content");
         main.style.opacity = "1";
         main.style.pointerEvents = "auto";
-        document.getElementById("bgm").play();
-    }
-});
+        document.getElementById("bgm").play().catch(() => {});
+    }, 600);
+}
 
 const messages = [
     { text: "Hi, My name is ", highlight: "Lenzy" },
@@ -446,7 +520,6 @@ audio.volume = volumeSlider.value / 100;
 
 volumeSlider.addEventListener("input", function() {
     audio.volume = this.value / 100;
-    
     const icon = document.getElementById("volume-icon");
     if (this.value == 0) {
         icon.src = "muted.png";
@@ -459,11 +532,8 @@ volumeSlider.addEventListener("input", function() {
 
 document.getElementById("volume-box").addEventListener("click", (e) => {
     if (e.target.id === "volume-slider") return;
-    
     const icon = document.getElementById("volume-icon");
-    
     volumeOn = !volumeOn;
-
     if (volumeOn) {
         audio.muted = false;
         icon.src = "volume.png";
@@ -477,12 +547,8 @@ document.getElementById("volume-box").addEventListener("click", (e) => {
 function copyAddress(addr) {
     navigator.clipboard.writeText(addr);
     let popup = document.getElementById("copy-popup");
-
     popup.classList.add("show");
-
-    setTimeout(() => {
-        popup.classList.remove("show");
-    }, 1500);
+    setTimeout(() => { popup.classList.remove("show"); }, 1500);
 }
 </script>
 
