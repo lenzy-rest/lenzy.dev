@@ -418,36 +418,14 @@ body {
     gap: 0;
 }
 
-#lang-box:hover {
-    width: 110px;
-}
-
 #lang-flag {
     font-size: 24px;
     line-height: 1;
     flex-shrink: 0;
-    transition: transform 0.3s ease;
-}
-
-#lang-box:hover #lang-flag {
-    transform: scale(0.9);
 }
 
 #lang-code {
-    width: 0;
-    opacity: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    font-family: 'BBH Sans Hegarty', sans-serif;
-    font-size: 15px;
-    color: #ddd;
-    transition: all 0.3s ease;
-}
-
-#lang-box:hover #lang-code {
-    width: 36px;
-    opacity: 1;
-    margin-left: 6px;
+    display: none;
 }
 
 #lang-dropdown {
