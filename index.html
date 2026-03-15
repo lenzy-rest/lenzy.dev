@@ -399,55 +399,67 @@ body {
 #lang-container {
     position: fixed;
     top: 20px;
-    right: 90px;
+    left: 20px;
     z-index: 100;
-    font-family: 'BBH Sans Hegarty', sans-serif;
 }
 
-#lang-btn {
+#lang-box {
     background: #1e1e1e;
-    border: 1px solid rgba(255,255,255,0.09);
-    border-radius: 12px;
-    padding: 0 14px;
-    height: 44px;
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 8px;
-    color: #ddd;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0,0,0,0.4);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    gap: 0;
+}
+
+#lang-box:hover {
+    width: 110px;
+}
+
+#lang-flag {
+    font-size: 24px;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+#lang-box:hover #lang-flag {
+    transform: scale(0.9);
+}
+
+#lang-code {
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
     font-family: 'BBH Sans Hegarty', sans-serif;
     font-size: 15px;
-    cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
-    white-space: nowrap;
-    box-shadow: 0 0 8px rgba(0,0,0,0.4);
+    color: #ddd;
+    transition: all 0.3s ease;
 }
 
-#lang-btn:hover {
-    background: #262626;
-    border-color: rgba(255,255,255,0.16);
-}
-
-#lang-btn .chevron {
-    font-size: 10px;
-    opacity: 0.5;
-    margin-left: 2px;
-    transition: transform 0.2s;
-}
-
-#lang-container.open #lang-btn .chevron {
-    transform: rotate(180deg);
+#lang-box:hover #lang-code {
+    width: 36px;
+    opacity: 1;
+    margin-left: 6px;
 }
 
 #lang-dropdown {
     display: none;
     position: absolute;
     top: calc(100% + 8px);
-    right: 0;
+    left: 0;
     background: #1a1a1a;
     border: 1px solid rgba(255,255,255,0.09);
     border-radius: 12px;
     overflow: hidden;
-    min-width: 180px;
+    min-width: 165px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.5);
     z-index: 200;
 }
@@ -462,9 +474,11 @@ body {
     gap: 10px;
     padding: 11px 16px;
     color: #bbb;
+    font-family: 'BBH Sans Hegarty', sans-serif;
     font-size: 15px;
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
 }
 
 .lang-option:hover {
@@ -474,7 +488,6 @@ body {
 
 .lang-option.active {
     color: #fff;
-    font-weight: bold;
 }
 
 .lang-option .flag {
@@ -531,11 +544,10 @@ body {
 
 <!-- LANGUAGE SWITCHER -->
 <div id="lang-container">
-    <button id="lang-btn" onclick="toggleLang()">
-        <span class="flag">🇬🇧</span>
-        <span id="lang-label">EN</span>
-        <span class="chevron">▼</span>
-    </button>
+    <div id="lang-box" onclick="toggleLang()">
+        <span id="lang-flag">🇬🇧</span>
+        <span id="lang-code">EN</span>
+    </div>
     <div id="lang-dropdown">
         <div class="lang-option active" onclick="setLang('en')">
             <span class="flag">🇬🇧</span> English
@@ -580,6 +592,7 @@ body {
 <audio id="bgm" src="maxa.mp3" loop></audio>
 
 <script>
+// ── CAPTCHA ──
 function verifyCaptcha() {
     const btn = document.getElementById("captcha-btn");
     const text = document.getElementById("captcha-text");
@@ -594,93 +607,7 @@ function verifyCaptcha() {
     }, 600);
 }
 
-const messages = translations.en.messages;
-
-const element = document.getElementById("typewriter");
-let msgIndex = 0, charIndex = 0, typing = true;
-
-function typeDeleteLoop() {
-    const current = currentMessages[msgIndex % currentMessages.length];
-    const full = current.text + current.highlight;
-
-    if (typing) {
-        charIndex++;
-        if (charIndex <= full.length) {
-            updateDisplay(current, charIndex);
-            typewriterTimeout = setTimeout(typeDeleteLoop, 120);
-        } else {
-            typing = false;
-            typewriterTimeout = setTimeout(typeDeleteLoop, 2000);
-        }
-    } else {
-        charIndex--;
-        if (charIndex >= 0) {
-            updateDisplay(current, charIndex);
-            typewriterTimeout = setTimeout(typeDeleteLoop, 100);
-        } else {
-            typing = true;
-            msgIndex = (msgIndex + 1) % currentMessages.length;
-            typewriterTimeout = setTimeout(typeDeleteLoop, 120);
-        }
-    }
-}
-
-function updateDisplay(current, count) {
-    let normal = "";
-    let highlight = "";
-
-    if (count <= current.text.length) {
-        normal = current.text.substring(0, count);
-    } else {
-        normal = current.text;
-        highlight = current.highlight.substring(0, count - current.text.length);
-    }
-
-    element.innerHTML = normal + (highlight ? `<span class="highlight">${highlight}</span>` : "");
-}
-
-typeDeleteLoop();
-
-let volumeOn = true;
-const audio = document.getElementById("bgm");
-const volumeSlider = document.getElementById("volume-slider");
-
-audio.volume = volumeSlider.value / 100;
-
-volumeSlider.addEventListener("input", function() {
-    audio.volume = this.value / 100;
-    const icon = document.getElementById("volume-icon");
-    if (this.value == 0) {
-        icon.src = "muted.png";
-        volumeOn = false;
-    } else {
-        icon.src = "volume.png";
-        volumeOn = true;
-    }
-});
-
-document.getElementById("volume-box").addEventListener("click", (e) => {
-    if (e.target.id === "volume-slider") return;
-    const icon = document.getElementById("volume-icon");
-    volumeOn = !volumeOn;
-    if (volumeOn) {
-        audio.muted = false;
-        icon.src = "volume.png";
-        volumeSlider.value = audio.volume * 100;
-    } else {
-        audio.muted = true;
-        icon.src = "muted.png";
-    }
-});
-
-function copyAddress(addr) {
-    navigator.clipboard.writeText(addr);
-    let popup = document.getElementById("copy-popup");
-    popup.classList.add("show");
-    setTimeout(() => { popup.classList.remove("show"); }, 1500);
-}
-
-// ── LANGUAGE SWITCHER ──
+// ── TRANSLATIONS ──
 const translations = {
     en: {
         messages: [
@@ -690,7 +617,7 @@ const translations = {
         about: "About Me",
         bio: "Im a 16 year old backend developer, Skilled in python java php, I own services with affordable cost",
         flag: "🇬🇧",
-        label: "EN"
+        code: "EN"
     },
     de: {
         messages: [
@@ -698,9 +625,9 @@ const translations = {
             { text: "Ich liebe ", highlight: "Geld" }
         ],
         about: "Über mich",
-        bio: "Ich bin ein 16-jähriger Backend-Entwickler, erfahren in Python, Java und PHP. Ich biete erschwingliche Dienste an.",
+        bio: "Ich bin ein 16-jähriger Backend-Entwickler. Erfahren in Python, Java und PHP. Biete günstige Dienste an.",
         flag: "🇩🇪",
-        label: "DE"
+        code: "DE"
     },
     ru: {
         messages: [
@@ -708,55 +635,110 @@ const translations = {
             { text: "Я люблю ", highlight: "Деньги" }
         ],
         about: "Обо мне",
-        bio: "Мне 16 лет, я бэкенд-разработчик. Знаю Python, Java и PHP. Предлагаю доступные по цене услуги.",
+        bio: "Мне 16 лет, я бэкенд-разработчик. Знаю Python, Java и PHP. Предлагаю доступные услуги.",
         flag: "🇷🇺",
-        label: "RU"
+        code: "RU"
     }
 };
 
-let currentLang = 'en';
+// ── TYPEWRITER ──
+const element = document.getElementById("typewriter");
+let currentMessages = translations.en.messages;
+let msgIndex = 0, charIndex = 0, typing = true;
+let typewriterTimeout;
 
+function updateDisplay(current, count) {
+    let normal = "", highlight = "";
+    if (count <= current.text.length) {
+        normal = current.text.substring(0, count);
+    } else {
+        normal = current.text;
+        highlight = current.highlight.substring(0, count - current.text.length);
+    }
+    element.innerHTML = normal + (highlight ? `<span class="highlight">${highlight}</span>` : "");
+}
+
+function typeDeleteLoop() {
+    const current = currentMessages[msgIndex % currentMessages.length];
+    const full = current.text + current.highlight;
+    if (typing) {
+        charIndex++;
+        updateDisplay(current, charIndex);
+        if (charIndex >= full.length) {
+            typing = false;
+            typewriterTimeout = setTimeout(typeDeleteLoop, 2000);
+        } else {
+            typewriterTimeout = setTimeout(typeDeleteLoop, 120);
+        }
+    } else {
+        charIndex--;
+        updateDisplay(current, charIndex);
+        if (charIndex <= 0) {
+            typing = true;
+            charIndex = 0;
+            msgIndex = (msgIndex + 1) % currentMessages.length;
+            typewriterTimeout = setTimeout(typeDeleteLoop, 200);
+        } else {
+            typewriterTimeout = setTimeout(typeDeleteLoop, 80);
+        }
+    }
+}
+
+typeDeleteLoop();
+
+// ── VOLUME ──
+let volumeOn = true;
+const audio = document.getElementById("bgm");
+const volumeSlider = document.getElementById("volume-slider");
+audio.volume = volumeSlider.value / 100;
+
+volumeSlider.addEventListener("input", function() {
+    audio.volume = this.value / 100;
+    document.getElementById("volume-icon").src = this.value == 0 ? "muted.png" : "volume.png";
+    volumeOn = this.value != 0;
+});
+
+document.getElementById("volume-box").addEventListener("click", (e) => {
+    if (e.target.id === "volume-slider") return;
+    volumeOn = !volumeOn;
+    audio.muted = !volumeOn;
+    document.getElementById("volume-icon").src = volumeOn ? "volume.png" : "muted.png";
+    if (volumeOn) volumeSlider.value = audio.volume * 100;
+});
+
+// ── COPY ──
+function copyAddress(addr) {
+    navigator.clipboard.writeText(addr);
+    const popup = document.getElementById("copy-popup");
+    popup.classList.add("show");
+    setTimeout(() => popup.classList.remove("show"), 1500);
+}
+
+// ── LANGUAGE ──
 function toggleLang() {
     document.getElementById("lang-container").classList.toggle("open");
 }
 
 document.addEventListener("click", function(e) {
-    const container = document.getElementById("lang-container");
-    if (!container.contains(e.target)) {
-        container.classList.remove("open");
-    }
+    const c = document.getElementById("lang-container");
+    if (!c.contains(e.target)) c.classList.remove("open");
 });
 
 function setLang(lang) {
-    currentLang = lang;
     const t = translations[lang];
-
-    // Update button
-    document.querySelector("#lang-btn .flag").textContent = t.flag;
-    document.getElementById("lang-label").textContent = t.label;
-
-    // Update active state in dropdown
-    document.querySelectorAll(".lang-option").forEach(opt => opt.classList.remove("active"));
+    document.getElementById("lang-flag").textContent = t.flag;
+    document.getElementById("lang-code").textContent = t.code;
+    document.querySelectorAll(".lang-option").forEach(o => o.classList.remove("active"));
     document.querySelector(`.lang-option[onclick="setLang('${lang}')"]`).classList.add("active");
-
-    // Update static texts
     document.getElementById("subtext-about").textContent = t.about;
     document.getElementById("subtext-bio").textContent = t.bio;
-
-    // Restart typewriter with new messages
-    msgIndex = 0;
-    charIndex = 0;
-    typing = true;
     currentMessages = t.messages;
+    msgIndex = 0; charIndex = 0; typing = true;
     clearTimeout(typewriterTimeout);
     element.innerHTML = "";
     typeDeleteLoop();
-
     document.getElementById("lang-container").classList.remove("open");
 }
-
-let currentMessages = translations.en.messages;
-let typewriterTimeout;
 </script>
 
 <script>
